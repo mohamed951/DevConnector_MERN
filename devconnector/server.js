@@ -1,11 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const passport = require('passport');
 
+//Routes
 const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
 
 const app = express();
+
+//middlewares
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(bodyParser.json());
 
 //DB Config
 const db = require('./config/keys').mongoURI;
@@ -22,7 +31,11 @@ mongoose
         console.log(`Database Error ${err}`)
     })
 
-app.get('/', (req, res) => res.send("hello"))
+
+// Passport middleware
+app.use(passport.initialize());
+
+require('./config/passport')(passport);
 
 app.use('/api/users', users);
 app.use('/api/profile', profile);
